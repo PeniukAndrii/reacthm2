@@ -1,33 +1,28 @@
 import React, {Component} from 'react';
+import {AllService} from "../../Service/AllService";
 import Post from "../Post/Post";
-
 class AllPost extends Component {
 
-    state = {post:[], chosenPost:null}
+    state={posts:[], chosenOne:null}
+    AllService = new AllService()
 
-    componentDidMount(){
-        fetch('https://jsonplaceholder.typicode.com/posts')
-            .then(value => value.json())
-            .then(post=>{
-                this.setState({post})
-            })
+    findPost=(id)=>{
+        this.setState({chosenOne:this.AllService.getPostById(this.state.posts, id)})
     }
 
-    setPost=(id)=>{
-        let {post}=this.state
-        let find = post.find(value => value.id===id)
-        this.setState({chosenPost: find})
+    componentDidMount(){
+        this.AllService.getAllPost().then(value => this.setState({posts:value}))
     }
 
     render() {
-        let {post, chosenPost} = this.state
+        let {posts, chosenOne}=this.state
         return (
             <div>
                 {
-                    post.map(value => <Post item={value} key={value.id} setPost={this.setPost} isShowBtn={true}/>)
+                    posts.map(value => <Post item={value} key={value.id} findPost={this.findPost}/>)
                 }
                 {
-                    chosenPost && <Post item={chosenPost} isShowBtn={false}/>
+                    chosenOne && <Post item={chosenOne} chose={true}/>
                 }
             </div>
         );
